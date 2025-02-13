@@ -1,0 +1,32 @@
+# This YAML file defines an Ingress resource in Kubernetes.
+# The Ingress is named "kubernetes-dashboard" and belongs to the "kubernetes-dashboard" namespace.
+#
+# The Ingress resource manages external access to the services within the cluster.
+# It provides HTTP routing to the services.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # The annotation used by NGINX Ingress Controller to rewrite the target URL.
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+      - kubernetes.marvel.com  # The hostname for which the TLS certificate is valid.
+    secretName: kubernetes-dashboard-secret  # The secret that contains the TLS certificate and key.
+  rules:
+  - host: kubernetes.marvel.com  # The hostname for which the rule applies.
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubernetes-dashboard-kong-proxy  # The service to which traffic should be directed.
+            port:
+              number: 443  # The port on the service to which traffic should be directed.
+
